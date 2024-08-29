@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 connectDB();
 
-router.get("todos/", async (req, res) => {
+app.get("todos/", async (req, res) => {
   try {
     const todos = await Todo.find();
     res.json(todos);
@@ -22,7 +22,7 @@ router.get("todos/", async (req, res) => {
 });
 
 // 創建新的 To-Do 項目
-router.post("todos/", async (req, res) => {
+app.post("todos/", async (req, res) => {
   const todo = new Todo({
     title: req.body.title,
   });
@@ -36,7 +36,7 @@ router.post("todos/", async (req, res) => {
 });
 
 // 更新 To-Do 項目
-router.patch("todos/:id", async (req, res) => {
+app.patch("todos/:id", async (req, res) => {
   const userId = req.params.id;
   try {
     const todo = await Todo.findByIdAndUpdate(userId, req.body.title);
@@ -58,7 +58,7 @@ router.patch("todos/:id", async (req, res) => {
 });
 
 // 刪除 To-Do 項目
-router.delete("todos/:id", async (req, res) => {
+app.delete("todos/:id", async (req, res) => {
   try {
     const userId = req.params.id
     const deletedUser = await Todo.findByIdAndDelete(userId);
