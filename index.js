@@ -5,6 +5,7 @@ const cors = require("cors");
 const connectDB = require("./connectMongo");
 
 const todoRoutes = require("./routes/todoRoutes");
+const Todo = require("./models/Todo")
 
 const app = express();
 
@@ -12,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 connectDB();
 
-app.get("todos/", async (req, res) => {
+app.get("/todos", async (req, res) => {
   try {
     const todos = await Todo.find();
     res.json(todos);
@@ -22,7 +23,7 @@ app.get("todos/", async (req, res) => {
 });
 
 // 創建新的 To-Do 項目
-app.post("todos/", async (req, res) => {
+app.post("/todos", async (req, res) => {
   const todo = new Todo({
     title: req.body.title,
   });
@@ -36,7 +37,7 @@ app.post("todos/", async (req, res) => {
 });
 
 // 更新 To-Do 項目
-app.patch("todos/:id", async (req, res) => {
+app.patch("/todos/:id", async (req, res) => {
   const userId = req.params.id;
   try {
     const todo = await Todo.findByIdAndUpdate(userId, req.body.title);
@@ -58,7 +59,7 @@ app.patch("todos/:id", async (req, res) => {
 });
 
 // 刪除 To-Do 項目
-app.delete("todos/:id", async (req, res) => {
+app.delete("/todos/:id", async (req, res) => {
   try {
     const userId = req.params.id
     const deletedUser = await Todo.findByIdAndDelete(userId);
