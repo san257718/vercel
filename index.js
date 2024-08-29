@@ -12,7 +12,70 @@ app.use(cors());
 app.use(express.json());
 connectDB();
 
-app.use("/todos", todoRoutes);
+router.get("todos/", async (req, res) => {
+  try {
+    const todos = await Todo.find();
+    res.json(todos);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// 創建新的 To-Do 項目
+router.post("todos/", async (req, res) => {
+  const todo = new Todo({
+    title: req.body.title,
+  });
+
+  try {
+    const newTodo = await todo.save();
+    res.status(201).json(newTodo);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+// 更新 To-Do 項目
+router.patch("todos/:id", async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const todo = await Todo.findByIdAndUpdate(userId, req.body.title);
+
+    if (!todo) return res.status(404).json({ message: "To-Do not found" });
+
+    if (req.body.title != null) {
+      todo.title = req.body.title;
+    }
+    if (req.body.completed != null) {
+      todo.completed = req.body.completed;
+    }
+
+    const updatedTodo = await todo.save();
+    res.json(updatedTodo);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+// 刪除 To-Do 項目
+router.delete("todos/:id", async (req, res) => {
+  try {
+    const userId = req.params.id
+    const deletedUser = await Todo.findByIdAndDelete(userId);
+
+    console.log(userId);
+    
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "User successfully deleted" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error deleting user" });
+  }
+});
 
 const port = process.env.PORT || 8081;
 app.listen(port, () => {
